@@ -3,7 +3,7 @@
 //  MCalApp
 //
 //  Created by shashi kumar on 25/01/18.
-//  Copyright © 2018 Iluminar Media Private Limited. All rights reserved.
+//  Copyright © 2018. All rights reserved.
 //
 
 import UIKit
@@ -15,7 +15,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        self.window = UIWindow.init(frame: UIScreen.main.bounds)
+        if let window = self.window {
+            window.backgroundColor = .white
+            let viewController = ViewController.init(nibName: nil, bundle: nil)
+            let navC = UINavigationController.init(rootViewController: viewController)
+            window.rootViewController = navC
+            window.makeKeyAndVisible()
+        }
+        
         return true
     }
 
