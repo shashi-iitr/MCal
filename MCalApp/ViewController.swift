@@ -8,14 +8,19 @@
 
 import UIKit
 
-class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+let screenWidth = UIScreen.main.bounds.width
+let screenHeight = UIScreen.main.bounds.height
+let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, MonthViewControllerDelegate {
     
-    let screenWidth = UIScreen.main.bounds.width
-    let screenHeight = UIScreen.main.bounds.height
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    var currentYear: Int = 2018
+    var currentYear: Int = Calendar.current.component(.year, from: Date())
     var currentYearIndex = 0
     var years = NSMutableArray()
+    
+    var selectedYear: Int = 2018
+    var selectedMonthIndex: Int = 0
+    
     let monthCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -28,7 +33,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         monthCollectionView.showsVerticalScrollIndicator = false
         monthCollectionView.translatesAutoresizingMaskIntoConstraints = false
         monthCollectionView.backgroundColor = .white
-//        monthCollectionView.isPagingEnabled = true
         monthCollectionView.allowsMultipleSelection = false
         
         return monthCollectionView
@@ -47,25 +51,29 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         self.view.backgroundColor = .white
         self.title = "Calendar"
         
+        let month = Calendar.current.component(.month, from: Date())
+        print("month \(month)")
+        
+        print("currentYear \(currentYear)")
+        
+        currentYearIndex = currentIndex(startYear: 2005, endYear: 2050)
+        print("currentYearIndex \(currentYearIndex)")
+
+        setupViews()
+    }
+    
+    func setupViews() -> Void {
         monthCollectionView.delegate = self
         monthCollectionView.dataSource = self
         monthCollectionView.register(MonthCell.self, forCellWithReuseIdentifier: MonthCell.reusedIdentifier())
         monthCollectionView.register(CellHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CellHeaderView.reusedIdentifier())
-
+        
         self.view.addSubview(monthCollectionView)
         monthCollectionView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 64).isActive = true
         monthCollectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         monthCollectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         monthCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         
-        let month = Calendar.current.component(.month, from: Date())
-        print("month \(month)")
-        
-        currentYear = Calendar.current.component(.year, from: Date())
-        print("currentYear \(currentYear)")
-        
-        currentYearIndex = currentIndex(startYear: 2005, endYear: 2050)
-        print("currentYearIndex \(currentYearIndex)")
         DispatchQueue.main.asyncAfter(deadline: .now() ) {
             self.monthCollectionView.reloadData()
             self.monthCollectionView.scrollToItem(at: IndexPath.init(item: 0, section: self.currentYearIndex), at: .top, animated: false)
@@ -76,17 +84,19 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
     }
     
-    func currentIndex(startYear: Int, endYear: Int) -> Int {
-        var index = 0
-        for i in startYear...endYear {
-            years.add(i)
+    //MARK: MonthViewControllerDelegate
+    
+    func calendarScrolledToYear(_ year: Int, monthIndex: Int) {
+        print(("year \(year), monthIndex \(monthIndex)"))
+        let yearIndex = years.index(of: year)
+        DispatchQueue.main.asyncAfter(deadline: .now() ) {
+            self.monthCollectionView.reloadData()
+            self.monthCollectionView.scrollToItem(at: IndexPath.init(item: 0, section: yearIndex), at: .top, animated: false)
+            
+            if let attributes = self.monthCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: yearIndex)) {
+                self.monthCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.monthCollectionView.contentInset.top), animated: false)
+            }
         }
-        print("currentYear \(currentYear)")
-        if years.contains(currentYear) == true {
-            index = years.index(of: currentYear)
-        }
-        
-        return index
     }
     
     //MARK: UICollectionViewDelegate, UICollectionViewDataSource
@@ -108,6 +118,16 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        
+        selectedYear = years[indexPath.section] as! Int
+        selectedMonthIndex = indexPath.item
+        
+        let monthVC = MonthViewController.init(nibName: nil, bundle: nil)
+        monthVC.years = years
+        monthVC.delegate = self
+        monthVC.currentlySelectedYear = selectedYear
+        monthVC.currentlySelectedMonthIndex = selectedMonthIndex
+        self.navigationController?.pushViewController(monthVC, animated: true)
     }
     
     //MARK: UICollectionViewDelegateFlowLayout
@@ -135,48 +155,20 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return UICollectionReusableView()
     }
     
-    /*
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        print("scrollViewDidEndDecelerating")
-        
-        let pageHeight = scrollView.frame.height
-        let index = self.monthCollectionView.contentOffset.y / pageHeight
-        let newIndex = Int(ceil(index))
-        print("newIndex \(newIndex)")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() ) {
-            if let sv = self.monthCollectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: newIndex)) {
-                let svFrame = sv.convert(scrollView.frame, to: self.view)
-                print("svFrame \(svFrame)")
-                if svFrame.origin.y - 64 < 20 {
-                    if let attributes = self.monthCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: newIndex)) {
-                        self.monthCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.monthCollectionView.contentInset.top), animated: false)
-                    }
-                }
-            }
-        }
-    }
+    //MARK: Helpers
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        print("scrollViewDidEndDragging")
-        let pageHeight = scrollView.frame.height
-        let index = self.monthCollectionView.contentOffset.y / pageHeight
-        let newIndex = Int(ceil(index))
-        print("newIndex \(newIndex)")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() ) {
-            if let sv = self.monthCollectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: newIndex)) {
-                let svFrame = sv.convert(scrollView.frame, to: self.view)
-                print("svFrame \(svFrame)")
-                if svFrame.origin.y - 64 < 20 {
-                    if let attributes = self.monthCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: newIndex)) {
-                        self.monthCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.monthCollectionView.contentInset.top), animated: false)
-                    }
-                }
-            }
+    func currentIndex(startYear: Int, endYear: Int) -> Int {
+        var index = 0
+        for i in startYear...endYear {
+            years.add(i)
         }
+        print("currentYear \(currentYear)")
+        if years.contains(currentYear) == true {
+            index = years.index(of: currentYear)
+        }
+        
+        return index
     }
- */
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

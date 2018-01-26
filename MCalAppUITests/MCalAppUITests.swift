@@ -3,7 +3,7 @@
 //  MCalAppUITests
 //
 //  Created by shashi kumar on 25/01/18.
-//  Copyright © 2018 Iluminar Media Private Limited. All rights reserved.
+//  Copyright © 2018. All rights reserved.
 //
 
 import XCTest
