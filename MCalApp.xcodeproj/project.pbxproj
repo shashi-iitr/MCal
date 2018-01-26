@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F1040436201BA5AB00481570 /* AgendaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1040435201BA5AB00481570 /* AgendaCell.swift */; };
 		F10EFFD5201B76E900D41080 /* WeekDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFD4201B76E900D41080 /* WeekDayView.swift */; };
 		F10EFFD7201B772400D41080 /* MonthBackButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFD6201B772400D41080 /* MonthBackButtonView.swift */; };
 		F10EFFD9201B77D000D41080 /* GenericExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFD8201B77D000D41080 /* GenericExtension.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F1040435201BA5AB00481570 /* AgendaCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaCell.swift; sourceTree = "<group>"; };
 		F10EFFD4201B76E900D41080 /* WeekDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekDayView.swift; sourceTree = "<group>"; };
 		F10EFFD6201B772400D41080 /* MonthBackButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthBackButtonView.swift; sourceTree = "<group>"; };
 		F10EFFD8201B77D000D41080 /* GenericExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericExtension.swift; sourceTree = "<group>"; };
@@ -86,6 +88,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F1040434201BA58300481570 /* Agenda View */ = {
+			isa = PBXGroup;
+			children = (
+				F1040435201BA5AB00481570 /* AgendaCell.swift */,
+			);
+			path = "Agenda View";
+			sourceTree = "<group>";
+		};
 		F10EFFD3201B76C900D41080 /* Month View */ = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +139,7 @@
 		F13C7EC6201A524B002D03EC /* MCalApp */ = {
 			isa = PBXGroup;
 			children = (
+				F1040434201BA58300481570 /* Agenda View */,
 				F10EFFDA201B7C9900D41080 /* Year View */,
 				F10EFFD3201B76C900D41080 /* Month View */,
 				F13C7EC7201A524B002D03EC /* AppDelegate.swift */,
@@ -299,6 +310,7 @@
 				F10EFFD9201B77D000D41080 /* GenericExtension.swift in Sources */,
 				F10EFFD7201B772400D41080 /* MonthBackButtonView.swift in Sources */,
 				F10EFFD5201B76E900D41080 /* WeekDayView.swift in Sources */,
+				F1040436201BA5AB00481570 /* AgendaCell.swift in Sources */,
 				F13C7EC8201A524B002D03EC /* AppDelegate.swift in Sources */,
 				F129606C201B16CD00CB99AB /* MonthViewController.swift in Sources */,
 			);

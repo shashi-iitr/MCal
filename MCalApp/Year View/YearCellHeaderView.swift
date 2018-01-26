@@ -15,7 +15,7 @@ class YearCellHeaderView: UICollectionReusableView {
         label.text = ""
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 32, weight: UIFont.Weight.bold)
-        label.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
+        label.textColor = Color.darkText.value
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .white
         
@@ -24,7 +24,7 @@ class YearCellHeaderView: UICollectionReusableView {
     
     let separatorView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.init(red: 224/255, green: 224/255, blue: 224/255, alpha: 1)
+        view.backgroundColor = Color.shadow.value
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view

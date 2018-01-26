@@ -42,9 +42,9 @@ class WeekDayView: UIView {
             weekDayLabel.text = weekDays[i]
             weekDayLabel.textAlignment = .center
             if i == 0 || i == 6 {
-                weekDayLabel.textColor = UIColor.init(red: 250/255, green: 41/255, blue: 40/255, alpha: 1)
+                weekDayLabel.textColor = Color.negation.value
             } else {
-                weekDayLabel.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
+                weekDayLabel.textColor = Color.darkText.value
             }
             weekDayLabel.font = UIFont.systemFont(ofSize: 14)
             weekDayStackView.addArrangedSubview(weekDayLabel)

@@ -12,7 +12,7 @@ protocol MonthViewControllerDelegate: class {
     func calendarScrolledToYear(_ year: Int, monthIndex: Int)
 }
 
-class MonthViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class MonthViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource {
     
     var years = NSMutableArray()
     var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -24,6 +24,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     weak var delegate: MonthViewControllerDelegate?
     let backButtonView = MonthBackButtonView.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 44))
+    var agendaTableView: UITableView!
     
     let dayCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -67,7 +68,8 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         print("firstWeekDayOfMonth \(firstWeekDayOfMonth)")
         
         setupNavViews()
-        setupSubViews()
+        setupCollectionView()
+        setupTableView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -86,7 +88,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         self.navigationItem.titleView = backButtonView
     }
     
-    func setupSubViews() -> Void {
+    func setupCollectionView() -> Void {
         dayCollectionView.delegate = self
         dayCollectionView.dataSource = self
         dayCollectionView.register(DayCell.self, forCellWithReuseIdentifier: DayCell.reusedIdentifier())
@@ -116,6 +118,22 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         }
     }
     
+    func setupTableView() -> Void {
+        self.agendaTableView = UITableView.init(frame: .zero, style: .plain)
+        self.agendaTableView.register(AgendaCell.self, forCellReuseIdentifier: AgendaCell.reusedIdentifier())
+        self.agendaTableView.delegate = self
+        self.agendaTableView.dataSource = self
+        self.agendaTableView.backgroundColor = .white
+        self.agendaTableView.separatorStyle = .none
+        self.view.addSubview(self.agendaTableView)
+        
+        self.agendaTableView.translatesAutoresizingMaskIntoConstraints = false
+        agendaTableView.topAnchor.constraint(equalTo: self.dayCollectionView.bottomAnchor, constant: 0).isActive = true
+        agendaTableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+        agendaTableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+        agendaTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+    }
+    
     //MARK: UICollectionViewDelegate, UICollectionViewDataSource
     // Years starts from 2005 to 2050
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -138,9 +156,9 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         }
         
         if indexPath.item == 0 || (indexPath.item % 7 == 0) || ((indexPath.item + 1) % 7) == 0 {
-            cell.dayLabel.textColor = UIColor.init(red: 250/255, green: 90/255, blue: 90/255, alpha: 1)
+            cell.dayLabel.textColor = Color.negation.withAlpha(0.6)
         } else {
-            cell.dayLabel.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
+            cell.dayLabel.textColor = Color.darkText.value
         }
         
         return cell
@@ -162,6 +180,27 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0.0
+    }
+    
+    //MARK: UITableViewDelegate, UITableViewDataSource
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 5
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reusedIdentifier(), for: indexPath) as! AgendaCell
+        cell.selectionStyle = .none
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return AgendaCell.cellHeight()
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     //MARK: UIScrollViewDelegate

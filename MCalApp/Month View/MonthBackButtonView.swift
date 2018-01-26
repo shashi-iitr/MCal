@@ -24,7 +24,7 @@ class MonthBackButtonView: UIView {
         let label = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 44))
         label.text = ""
         label.textAlignment = .left
-        label.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
+        label.textColor = Color.darkText.value
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.backgroundColor = .clear
         return label

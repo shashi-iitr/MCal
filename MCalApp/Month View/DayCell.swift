@@ -16,7 +16,7 @@ class DayCell: UICollectionViewCell {
         label.backgroundColor = .white
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
+        label.textColor = Color.darkText.value
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -24,7 +24,7 @@ class DayCell: UICollectionViewCell {
     
     let dotView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 0.5)
+        view.backgroundColor = Color.lightText.value
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
