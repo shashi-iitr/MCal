@@ -14,7 +14,7 @@ class MonthCell: UICollectionViewCell {
         let label = UILabel()
         label.text = ""
         label.textAlignment = .center
-        label.font=UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
         label.translatesAutoresizingMaskIntoConstraints = false
         

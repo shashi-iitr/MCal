@@ -23,9 +23,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     var collectionViewHeightConstraint: NSLayoutConstraint?
     
     weak var delegate: MonthViewControllerDelegate?
-    
-    var leftItem: UIBarButtonItem?
-    let backButtonView = MonthBackButtonView.init(frame: CGRect.init(x: 0, y: 0, width: 104, height: 44))
+    let backButtonView = MonthBackButtonView.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 44))
     
     let dayCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -72,23 +70,26 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         setupSubViews()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if self.isMovingFromParentViewController {
+            if let delegate = delegate {
+                delegate.calendarScrolledToYear(currentlySelectedYear, monthIndex: currentlySelectedMonthIndex)
+            }
+        }
+    }
+    
     //MARK: Configure subviews
     
     func setupNavViews() -> Void {
-        let tap = UITapGestureRecognizer.init(target: self, action: #selector(MonthViewController.didTapBackButton))
-        backButtonView.addGestureRecognizer(tap)
         backButtonView.configureTitle("\(months[currentlySelectedMonthIndex]) \(currentlySelectedYear)")
-        leftItem = UIBarButtonItem.init(customView: backButtonView)
-        self.navigationItem.backBarButtonItem = nil
-        self.navigationItem.leftBarButtonItem = leftItem
-        leftItem?.tintColor = .blue
-        self.navigationController?.navigationBar.tintColor = .blue
+        self.navigationItem.titleView = backButtonView
     }
     
     func setupSubViews() -> Void {
         dayCollectionView.delegate = self
         dayCollectionView.dataSource = self
-        dayCollectionView.register(MonthCell.self, forCellWithReuseIdentifier: MonthCell.reusedIdentifier())
+        dayCollectionView.register(DayCell.self, forCellWithReuseIdentifier: DayCell.reusedIdentifier())
         
         self.view.addSubview(dayCollectionView)
         dayCollectionView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 94).isActive = true
@@ -126,25 +127,25 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: MonthCell = collectionView.dequeueReusableCell(withReuseIdentifier: MonthCell.reusedIdentifier(), for: indexPath) as! MonthCell
+        let cell: DayCell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCell.reusedIdentifier(), for: indexPath) as! DayCell
         if indexPath.item <= firstWeekDayOfMonth - 2 {
-            cell.configureWithMonth("")
+            cell.configureWithDay("", isAgendaTagged: false)
             cell.isHidden = true
         } else {
             let calcDate = indexPath.row - firstWeekDayOfMonth + 2
             cell.isHidden = false
-            cell.configureWithMonth("\(calcDate)")
+            cell.configureWithDay("\(calcDate)", isAgendaTagged: true)
         }
         
         if indexPath.item == 0 || (indexPath.item % 7 == 0) || ((indexPath.item + 1) % 7) == 0 {
-            cell.monthLabel.textColor = UIColor.init(red: 250/255, green: 90/255, blue: 90/255, alpha: 1)
+            cell.dayLabel.textColor = UIColor.init(red: 250/255, green: 90/255, blue: 90/255, alpha: 1)
         } else {
-            cell.monthLabel.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
+            cell.dayLabel.textColor = UIColor.init(red: 41/255, green: 41/255, blue: 40/255, alpha: 1)
         }
         
         return cell
     }
-    
+        
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
     }
@@ -205,13 +206,6 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     //MARK: Actions
     
-    @objc func didTapBackButton() -> Void {
-        if let delegate = delegate {
-            delegate.calendarScrolledToYear(currentlySelectedYear, monthIndex: currentlySelectedMonthIndex)
-        }
-        self.navigationController?.popViewController(animated: true)
-    }
-
     //MARK: Helpers
     
     func firstWeekDay() -> Int {

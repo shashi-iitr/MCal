@@ -62,6 +62,16 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         setupViews()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.title = "Calendar"
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.title = ""
+    }
+    
     func setupViews() -> Void {
         monthCollectionView.delegate = self
         monthCollectionView.dataSource = self
