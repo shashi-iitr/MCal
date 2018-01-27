@@ -12,7 +12,7 @@ let screenWidth = UIScreen.main.bounds.width
 let screenHeight = UIScreen.main.bounds.height
 let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, MonthViewControllerDelegate {
+class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     var currentYear: Int = Calendar.current.component(.year, from: Date())
     var currentYearIndex = 0
@@ -93,22 +93,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
         }
     }
-    
-    //MARK: MonthViewControllerDelegate
-    
-    func calendarScrolledToYear(_ year: Int, monthIndex: Int) {
-        print(("year \(year), monthIndex \(monthIndex)"))
-        let yearIndex = years.index(of: year)
-        DispatchQueue.main.asyncAfter(deadline: .now() ) {
-            self.monthCollectionView.reloadData()
-            self.monthCollectionView.scrollToItem(at: IndexPath.init(item: 0, section: yearIndex), at: .top, animated: false)
-            
-            if let attributes = self.monthCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: yearIndex)) {
-                self.monthCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.monthCollectionView.contentInset.top), animated: false)
-            }
-        }
-    }
-    
+        
     //MARK: UICollectionViewDelegate, UICollectionViewDataSource
     // Years starts from 2005 to 2050
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -134,7 +119,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         let monthVC = MonthViewController.init(nibName: nil, bundle: nil)
         monthVC.years = years
-        monthVC.delegate = self
         monthVC.currentlySelectedYear = selectedYear
         monthVC.currentlySelectedMonthIndex = selectedMonthIndex
         self.navigationController?.pushViewController(monthVC, animated: true)

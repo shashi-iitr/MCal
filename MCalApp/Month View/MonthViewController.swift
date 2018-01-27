@@ -8,35 +8,28 @@
 
 import UIKit
 
-protocol MonthViewControllerDelegate: class {
-    func calendarScrolledToYear(_ year: Int, monthIndex: Int)
-}
-
 class MonthViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource {
     
     var years = NSMutableArray()
     var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    
+    var allDays = NSMutableArray()
     var currentlySelectedYear: Int = 2018
     var currentlySelectedMonthIndex: Int = 0 // starts from 0
-    var firstWeekDayOfMonth = 0   //(Sunday-Saturday 1-7)
-    var collectionViewHeightConstraint: NSLayoutConstraint?
     
-    weak var delegate: MonthViewControllerDelegate?
-    let backButtonView = MonthBackButtonView.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 44))
     var agendaTableView: UITableView!
+    var yearBarButtonItem: UIBarButtonItem!
     
     let dayCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.scrollDirection = .vertical
-        
+        layout.headerReferenceSize = CGSize(width: UIScreen.main.bounds.width, height: DayHeaderView.viewHeight())
+
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .white
-        collectionView.isPagingEnabled = true
         collectionView.allowsMultipleSelection = false
 
         return collectionView
@@ -59,51 +52,42 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         self.view.backgroundColor = .white
         
         //check for leap year
-        let currentYear: Int = Calendar.current.component(.year, from: Date())
-        let currentMonthIndex: Int = Calendar.current.component(.month, from: Date()) - 1 // jan = 1, that's why reduce 1
-        if currentMonthIndex == 1 && currentYear % 4 == 0 {
-            days[currentMonthIndex] = 29
+        for i in 0..<years.count {
+            let year = years[i] as! Int
+            if ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0)) {
+                days[1] = 29
+            } else {
+                days[1] = 28
+            }
+            
+            allDays.addObjects(from: days)
         }
-        firstWeekDayOfMonth = firstWeekDay()
-        print("firstWeekDayOfMonth \(firstWeekDayOfMonth)")
         
         setupNavViews()
         setupCollectionView()
         setupTableView()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if self.isMovingFromParentViewController {
-            if let delegate = delegate {
-                delegate.calendarScrolledToYear(currentlySelectedYear, monthIndex: currentlySelectedMonthIndex)
-            }
-        }
-    }
-    
     //MARK: Configure subviews
     
     func setupNavViews() -> Void {
-        backButtonView.configureTitle("\(months[currentlySelectedMonthIndex]) \(currentlySelectedYear)")
-        self.navigationItem.titleView = backButtonView
+        yearBarButtonItem = UIBarButtonItem(title: "\(currentlySelectedYear)", style: .plain, target: self, action: #selector(MonthViewController.didTapBackButton(_:)))
+        yearBarButtonItem.setTitlePositionAdjustment(UIOffset(horizontal: -30, vertical: 0), for: .default)
+        navigationItem.leftItemsSupplementBackButton = true
+        navigationItem.leftBarButtonItems = [yearBarButtonItem]
     }
     
     func setupCollectionView() -> Void {
         dayCollectionView.delegate = self
         dayCollectionView.dataSource = self
         dayCollectionView.register(DayCell.self, forCellWithReuseIdentifier: DayCell.reusedIdentifier())
-        
+        dayCollectionView.register(DayHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: DayHeaderView.reusedIdentifier())
+
         self.view.addSubview(dayCollectionView)
         dayCollectionView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 94).isActive = true
         dayCollectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         dayCollectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
-        if firstWeekDayOfMonth - 1 + days[currentlySelectedMonthIndex] > 35 {
-            collectionViewHeightConstraint = dayCollectionView.heightAnchor.constraint(equalToConstant: 300)
-            collectionViewHeightConstraint?.isActive = true
-        } else {
-            collectionViewHeightConstraint = dayCollectionView.heightAnchor.constraint(equalToConstant: 250)
-            collectionViewHeightConstraint?.isActive = true
-        }
+        dayCollectionView.heightAnchor.constraint(equalToConstant: 300).isActive = true
         
         weekDayView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(weekDayView)
@@ -115,6 +99,11 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         DispatchQueue.main.asyncAfter(deadline: .now() ) {
             self.dayCollectionView.reloadData()
             self.dayCollectionView.scrollToItem(at: IndexPath.init(item: 0, section: ((self.years.index(of: self.currentlySelectedYear) * 12) + self.currentlySelectedMonthIndex)), at: .top, animated: false)
+
+            if let attributes = self.dayCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: ((self.years.index(of: self.currentlySelectedYear) * 12) + self.currentlySelectedMonthIndex))) {
+                self.dayCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.dayCollectionView.contentInset.top), animated: false)
+            }
+
         }
     }
     
@@ -137,20 +126,33 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     //MARK: UICollectionViewDelegate, UICollectionViewDataSource
     // Years starts from 2005 to 2050
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return years.count * months.count
+        return allDays.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return days[currentlySelectedMonthIndex] + firstWeekDayOfMonth - 1
+        let yearIndex = Int(ceil(Double(section / 12)))
+        let monthIndex = Int(ceil(Double(section % 12)))
+        let year = years.object(at: yearIndex) as! Int
+        let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
+
+        return (allDays[section] as! Int) + firstWeekDayMonth - 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let yearIndex = Int(ceil(Double(indexPath.section / 12)))
+        let monthIndex = Int(ceil(Double(indexPath.section % 12)))
+        let year = years.object(at: yearIndex) as! Int
+        
+        let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
+        
+        yearBarButtonItem.title = "\(year)"
+
         let cell: DayCell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCell.reusedIdentifier(), for: indexPath) as! DayCell
-        if indexPath.item <= firstWeekDayOfMonth - 2 {
+        if indexPath.item <= firstWeekDayMonth - 2 {
             cell.configureWithDay("", isAgendaTagged: false)
             cell.isHidden = true
         } else {
-            let calcDate = indexPath.row - firstWeekDayOfMonth + 2
+            let calcDate = indexPath.row - firstWeekDayMonth + 2
             cell.isHidden = false
             cell.configureWithDay("\(calcDate)", isAgendaTagged: true)
         }
@@ -163,9 +165,26 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         
         return cell
     }
-        
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionElementKindSectionHeader {
+            let yearIndex = Int(ceil(Double(indexPath.section / 12)))
+            let monthIndex = Int(ceil(Double(indexPath.section % 12)))
+            let year = years.object(at: yearIndex) as! Int
+            let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
+            print("firstWeekDayMonth \(firstWeekDayMonth) year \(year), monthIndex \(monthIndex)")
+
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:DayHeaderView.reusedIdentifier() , for: indexPath) as! DayHeaderView
+            headerView.configureViewWithMonth(months[monthIndex], index: firstWeekDayMonth - 1)
+            
+            return headerView
+        }
+        
+        return UICollectionReusableView()
     }
     
     //MARK: UICollectionViewDelegateFlowLayout
@@ -203,52 +222,16 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    //MARK: UIScrollViewDelegate
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView == dayCollectionView {
-            let pageHeight = scrollView.frame.height
-            let index = dayCollectionView.contentOffset.y / pageHeight
-            let yearIndex = Int(ceil(index)) / 12
-            print("yearIndex \(yearIndex)")
-            
-            let monthIndex = Int(ceil(index)) % 12
-            print("monthIndex \(monthIndex)")
-            
-            currentlySelectedYear = years[yearIndex] as! Int
-            currentlySelectedMonthIndex = monthIndex
-            
-            print("currentlySelectedYear \(currentlySelectedYear)")
-            print("currentlySelectedMonthIndex \(currentlySelectedMonthIndex)")
-            
-            firstWeekDayOfMonth = firstWeekDay()
-            self.dayCollectionView.reloadData()
-            
-            backButtonView.configureTitle("\(months[currentlySelectedMonthIndex]) \(currentlySelectedYear)")
-            
-            if firstWeekDayOfMonth - 1 + days[currentlySelectedMonthIndex] > 35 {
-                collectionViewHeightConstraint?.isActive = false
-                collectionViewHeightConstraint = dayCollectionView.heightAnchor.constraint(equalToConstant: 300)
-                collectionViewHeightConstraint?.isActive = true
-            } else {
-                collectionViewHeightConstraint?.isActive = false
-                collectionViewHeightConstraint = dayCollectionView.heightAnchor.constraint(equalToConstant: 250)
-                collectionViewHeightConstraint?.isActive = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now()) {
-                self.dayCollectionView.scrollToItem(at: IndexPath.init(item: 0, section: ((self.years.index(of: self.currentlySelectedYear) * 12) + self.currentlySelectedMonthIndex)), at: .top, animated: false)
-            }
-            
-            self.dayCollectionView.reloadData()
-        }
-    }
-    
     //MARK: Actions
+    
+    @objc func didTapBackButton(_ sender: UIBarButtonItem) -> Void {
+        self.navigationController?.popViewController(animated: true)
+    }
     
     //MARK: Helpers
     
-    func firstWeekDay() -> Int {
-        return ("\(currentlySelectedYear)-\(currentlySelectedMonthIndex + 1)-01".date?.firstDayOfTheMonth.weekday)!
+    func firstWeekDay(year: Int, monthIndex: Int) -> Int {
+        return ("\(year)-\(monthIndex + 1)-01".date?.firstDayOfTheMonth.weekday)!
     }
     
     override func didReceiveMemoryWarning() {

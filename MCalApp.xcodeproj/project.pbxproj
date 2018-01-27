@@ -15,6 +15,7 @@
 		F10EFFDE201B7D0900D41080 /* MonthCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFDD201B7D0900D41080 /* MonthCell.swift */; };
 		F10EFFE0201B7E9B00D41080 /* DayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFDF201B7E9B00D41080 /* DayCell.swift */; };
 		F129606C201B16CD00CB99AB /* MonthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F129606B201B16CD00CB99AB /* MonthViewController.swift */; };
+		F131CCE5201CF3FE004CE2C0 /* DayHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F131CCE4201CF3FE004CE2C0 /* DayHeaderView.swift */; };
 		F13C7EC8201A524B002D03EC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13C7EC7201A524B002D03EC /* AppDelegate.swift */; };
 		F13C7ECA201A524B002D03EC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13C7EC9201A524B002D03EC /* ViewController.swift */; };
 		F13C7ECF201A524B002D03EC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F13C7ECE201A524B002D03EC /* Assets.xcassets */; };
@@ -49,6 +50,7 @@
 		F10EFFDD201B7D0900D41080 /* MonthCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCell.swift; sourceTree = "<group>"; };
 		F10EFFDF201B7E9B00D41080 /* DayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCell.swift; sourceTree = "<group>"; };
 		F129606B201B16CD00CB99AB /* MonthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthViewController.swift; sourceTree = "<group>"; };
+		F131CCE4201CF3FE004CE2C0 /* DayHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayHeaderView.swift; sourceTree = "<group>"; };
 		F13C7EC4201A524B002D03EC /* MCalApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MCalApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F13C7EC7201A524B002D03EC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F13C7EC9201A524B002D03EC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				F10EFFD4201B76E900D41080 /* WeekDayView.swift */,
 				F10EFFD6201B772400D41080 /* MonthBackButtonView.swift */,
 				F10EFFDF201B7E9B00D41080 /* DayCell.swift */,
+				F131CCE4201CF3FE004CE2C0 /* DayHeaderView.swift */,
 			);
 			path = "Month View";
 			sourceTree = "<group>";
@@ -312,6 +315,7 @@
 				F10EFFD5201B76E900D41080 /* WeekDayView.swift in Sources */,
 				F1040436201BA5AB00481570 /* AgendaCell.swift in Sources */,
 				F13C7EC8201A524B002D03EC /* AppDelegate.swift in Sources */,
+				F131CCE5201CF3FE004CE2C0 /* DayHeaderView.swift in Sources */,
 				F129606C201B16CD00CB99AB /* MonthViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
