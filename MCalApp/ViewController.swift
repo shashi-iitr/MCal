@@ -13,14 +13,19 @@ let screenHeight = UIScreen.main.bounds.height
 let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
+    var referenceFrame = CGRect.zero
     var currentYear: Int = Calendar.current.component(.year, from: Date())
     var currentYearIndex = 0
     var years = NSMutableArray()
-    
+    var agenda = NSDictionary()
+
     var selectedYear: Int = 2018
     var selectedMonthIndex: Int = 0
     
+    lazy var agendaManager: AgendaManager = {
+        return AgendaManager()
+    }()
+
     let monthCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -55,11 +60,11 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         print("month \(month)")
         
         print("currentYear \(currentYear)")
-        
         currentYearIndex = currentIndex(startYear: 2005, endYear: 2050)
         print("currentYearIndex \(currentYearIndex)")
 
         setupViews()
+        fetchAllAgenda()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -113,6 +118,9 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        let cell = collectionView.cellForItem(at: indexPath)
+        referenceFrame = (cell?.contentView.convert((cell?.contentView.frame)!, to: self.view))!
+        print("referenceFrame \(String(describing: referenceFrame))")
         
         selectedYear = years[indexPath.section] as! Int
         selectedMonthIndex = indexPath.item
@@ -121,6 +129,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         monthVC.years = years
         monthVC.currentlySelectedYear = selectedYear
         monthVC.currentlySelectedMonthIndex = selectedMonthIndex
+        monthVC.agenda = agenda
         self.navigationController?.pushViewController(monthVC, animated: true)
     }
     
@@ -150,6 +159,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     //MARK: Helpers
+    
+    func fetchAllAgenda() -> Void {
+        agenda = agendaManager.fetchAgenda()
+    }
     
     func currentIndex(startYear: Int, endYear: Int) -> Int {
         var index = 0

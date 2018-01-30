@@ -12,7 +12,7 @@ class AgendaCell: UITableViewCell {
     
     let upperTimeLabel: UILabel = {
         let label = UILabel()
-        label.text = "10:30 AM"
+        label.text = ""
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = Color.intermidiateText.withAlpha(0.8)
@@ -23,7 +23,7 @@ class AgendaCell: UITableViewCell {
     
     let lowerTimeLabel: UILabel = {
         let label = UILabel()
-        label.text = "2:19 PM"
+        label.text = ""
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = Color.intermidiateText.withAlpha(0.8)
@@ -34,7 +34,7 @@ class AgendaCell: UITableViewCell {
     
     let agendaTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Daily Standup: What's going on?"
+        label.text = ""
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 18)
         label.textColor = Color.darkText.value
@@ -45,7 +45,7 @@ class AgendaCell: UITableViewCell {
     
     let agendaDescLabel: UILabel = {
         let label = UILabel()
-        label.text = "Join from PC, Mac, Linux, iOS or Android"
+        label.text = ""
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = Color.intermidiateText.withAlpha(0.8)
@@ -108,6 +108,27 @@ class AgendaCell: UITableViewCell {
         agendaDescLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         agendaDescLabel.leftAnchor.constraint(equalTo: verticleSeparatorView.rightAnchor, constant: 2).isActive = true
         agendaDescLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -5).isActive = true
+    }
+    
+    func configureWithAgenda(_ agenda: NSDictionary) -> Void {
+        agendaTitleLabel.text = agenda["title"] as? String
+        var upperTimeText = agenda["startTime"] as! String
+        if agenda["startTime"] as! String == "00:00 AM" {
+            upperTimeText = "Midnight"
+        }
+        upperTimeLabel.text = upperTimeText
+        
+        var lowerTimeText = agenda["endTime"] as! String
+        if agenda["endTime"] as! String == "00:00 AM" {
+            lowerTimeText = "Midnight"
+        }
+        lowerTimeLabel.text = lowerTimeText
+        
+        lowerTimeLabel.alpha = 1
+        if upperTimeText == "Midnight" && lowerTimeText == "Midnight" {
+            upperTimeLabel.text = "All Day"
+            lowerTimeLabel.alpha = 0
+        }
     }
     
     class func reusedIdentifier() -> String {

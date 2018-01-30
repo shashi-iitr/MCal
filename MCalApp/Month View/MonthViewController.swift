@@ -18,6 +18,8 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     var agendaTableView: UITableView!
     var yearBarButtonItem: UIBarButtonItem!
+    var agenda = NSDictionary()
+    var agendas = NSMutableArray()
     
     let dayCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -142,9 +144,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         let yearIndex = Int(ceil(Double(indexPath.section / 12)))
         let monthIndex = Int(ceil(Double(indexPath.section % 12)))
         let year = years.object(at: yearIndex) as! Int
-        
         let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
-        
         yearBarButtonItem.title = "\(year)"
 
         let cell: DayCell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCell.reusedIdentifier(), for: indexPath) as! DayCell
@@ -153,8 +153,21 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             cell.isHidden = true
         } else {
             let calcDate = indexPath.row - firstWeekDayMonth + 2
+            
+            var isAgendaFound = false
+            let yearMonth = "\(year)-\(monthIndex + 1)"
+            if let ymd = agenda[yearMonth] as? NSDictionary {
+                print("ymd \(ymd)")
+                let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
+                if let agendas = ymd[yearMonthDay] as? NSArray {
+                    if agendas.count > 0 {
+                        isAgendaFound = true
+                    }
+                }
+            }
+            
             cell.isHidden = false
-            cell.configureWithDay("\(calcDate)", isAgendaTagged: true)
+            cell.configureWithDay("\(calcDate)", isAgendaTagged: isAgendaFound)
         }
         
         if indexPath.item == 0 || (indexPath.item % 7 == 0) || ((indexPath.item + 1) % 7) == 0 {
@@ -168,6 +181,28 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        let yearIndex = Int(ceil(Double(indexPath.section / 12)))
+        let monthIndex = Int(ceil(Double(indexPath.section % 12)))
+        let year = years.object(at: yearIndex) as! Int
+        let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
+        if indexPath.item <= firstWeekDayMonth - 2 {
+        } else {
+            let calcDate = indexPath.row - firstWeekDayMonth + 2
+            let yearMonth = "\(year)-\(monthIndex + 1)"
+            if let ymd = agenda[yearMonth] as? NSDictionary {
+                print("ymd \(ymd)")
+                let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
+                if let localAgendas = ymd[yearMonthDay] as? NSArray {
+                    if localAgendas.count > 0 {
+                        agendas = localAgendas.mutableCopy() as! NSMutableArray
+                        self.agendaTableView.reloadData()
+                    }
+                } else {
+                    agendas.removeAllObjects()
+                    self.agendaTableView.reloadData()
+                }
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -204,12 +239,15 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     //MARK: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return agendas.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reusedIdentifier(), for: indexPath) as! AgendaCell
         cell.selectionStyle = .none
+        if agendas.count > 0 && indexPath.item < agendas.count {
+            cell.configureWithAgenda(agendas[indexPath.item] as! NSDictionary)
+        }
         
         return cell
     }
