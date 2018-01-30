@@ -16,7 +16,6 @@ class AgendaManager: NSObject {
             if let file = Bundle.main.url(forResource: "agenda", withExtension: "json") {
                 let data = try Data(contentsOf: file)
                 let json = try JSONSerialization.jsonObject(with: data, options: [])
-                print("json \(json)")
                 agenda = json as! NSDictionary
             } else {
                 print("no file")
@@ -27,6 +26,4 @@ class AgendaManager: NSObject {
         
         return agenda
     }
-
-
 }

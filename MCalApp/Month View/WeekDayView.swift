@@ -46,7 +46,7 @@ class WeekDayView: UIView {
             } else {
                 weekDayLabel.textColor = Color.darkText.value
             }
-            weekDayLabel.font = UIFont.systemFont(ofSize: 14)
+            weekDayLabel.font = UIFont.systemFont(ofSize: 12)
             weekDayStackView.addArrangedSubview(weekDayLabel)
         }
     }

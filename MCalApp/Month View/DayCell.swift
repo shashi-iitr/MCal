@@ -15,7 +15,7 @@ class DayCell: UICollectionViewCell {
         label.text = ""
         label.backgroundColor = .white
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = Color.darkText.value
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -48,7 +48,6 @@ class DayCell: UICollectionViewCell {
         dayLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         dayLabel.widthAnchor.constraint(equalToConstant: 26).isActive = true
         dayLabel.heightAnchor.constraint(equalToConstant: 26).isActive = true
-
 
         self.contentView.addSubview(dotView)
         dotView.topAnchor.constraint(equalTo: dayLabel.bottomAnchor, constant: 5).isActive = true

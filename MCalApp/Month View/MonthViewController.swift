@@ -20,6 +20,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     var yearBarButtonItem: UIBarButtonItem!
     var agenda = NSDictionary()
     var agendas = NSMutableArray()
+    var lastSelectedCell: DayCell?
     
     let dayCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -181,6 +182,12 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        let cell = collectionView.cellForItem(at: indexPath) as! DayCell
+        if let lsc = lastSelectedCell {
+            lsc.dayLabel.backgroundColor = .white// UIColor.init(red: 83/255, green: 196/255, blue: 201/255, alpha: 1)
+        }
+        cell.dayLabel.backgroundColor = UIColor.init(red: 83/255, green: 196/255, blue: 201/255, alpha: 1)
+        lastSelectedCell = cell
         let yearIndex = Int(ceil(Double(indexPath.section / 12)))
         let monthIndex = Int(ceil(Double(indexPath.section % 12)))
         let year = years.object(at: yearIndex) as! Int
