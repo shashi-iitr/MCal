@@ -19,13 +19,15 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     var agendaTableView: UITableView!
     var yearBarButtonItem: UIBarButtonItem!
-    var agenda = NSDictionary()
-    var agendas = NSMutableArray()
+    var overAllAgenda = NSDictionary()
+    var dailyAgendas = NSMutableArray()
     var selectedIndexPath: IndexPath?
     var selectedDay = ""
-    let locManager = LocationManager()
-    let wManager = WeatherManager()
     var weather: Weather?
+    let locManager = LocationManager()
+    lazy var weatherManager: WeatherManager = {
+        return WeatherManager()
+    }()
 
     lazy var agendaManager: AgendaManager = {
         return AgendaManager()
@@ -147,7 +149,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             return
         }
         
-        wManager.fetchWeatherDataForLocation(loc, success: { [weak self] (weather) in
+        weatherManager.fetchWeatherDataForLocation(loc, success: { [weak self] (weather) in
             self?.weather = weather
         }) { (error) in
             
@@ -185,7 +187,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             
             var isAgendaFound = false
             let yearMonth = "\(year)-\(monthIndex + 1)"
-            if let ymd = agenda[yearMonth] as? NSDictionary {
+            if let ymd = overAllAgenda[yearMonth] as? NSDictionary {
                 let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
                 if let agendas = ymd[yearMonthDay] as? NSArray {
                     if agendas.count > 0 {
@@ -214,6 +216,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         return cell
     }
     
+    // check for daily agenda and reload table view
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         let cell = collectionView.cellForItem(at: indexPath) as! DayCell
@@ -233,14 +236,14 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         } else {
             let calcDate = indexPath.row - firstWeekDayMonth + 2
             let yearMonth = "\(year)-\(monthIndex + 1)"
-            agendas.removeAllObjects()
+            dailyAgendas.removeAllObjects()
             selectedDay = ""
-            if let ymd = agenda[yearMonth] as? NSDictionary {
+            if let ymd = overAllAgenda[yearMonth] as? NSDictionary {
                 let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
                 selectedDay = yearMonthDay
                 if let localAgendas = ymd[yearMonthDay] as? NSArray {
                     if localAgendas.count > 0 {
-                        agendas = localAgendas.mutableCopy() as! NSMutableArray
+                        dailyAgendas = localAgendas.mutableCopy() as! NSMutableArray
                     }
                 }
             }
@@ -282,11 +285,11 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     //MARK: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return agendas.count + 1
+        return dailyAgendas.count + 1 // 0 = temperature, rest is for agendas
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
+        if indexPath.row == 0 { // temperature info
             let cell = tableView.dequeueReusableCell(withIdentifier: TemperatureCell.reusedIdentifier(), for: indexPath) as! TemperatureCell
             cell.selectionStyle = .none
             var summary = ""
@@ -297,7 +300,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
                     let currently = weather.currenlty
                     if Int((currently?.time)!) == timestamp {
                         summary = (currently?.summary)!
-                        tempStr = "Temp: \((Int((currently?.temperature!)!) - 32) * 5 / 9)ºC"
+                        tempStr = "Temp: \((Int((currently?.temperature)!) - 32) * 5 / 9)ºC"
                     } else {
                         let dailyTemps = weather.daily.dailyTemps
                         for dailyTemp in dailyTemps! {
@@ -316,11 +319,11 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             cell.configureWithSummary(summary, tempStr: tempStr)
             
             return cell
-        } else {
+        } else { // agenda info
             let cell = tableView.dequeueReusableCell(withIdentifier: AgendaCell.reusedIdentifier(), for: indexPath) as! AgendaCell
             cell.selectionStyle = .none
-            if agendas.count > 0 && ((indexPath.item - 1) < agendas.count) {
-                cell.configureWithAgenda(agendas[indexPath.item - 1] as! NSDictionary)
+            if dailyAgendas.count > 0 && ((indexPath.item - 1) < dailyAgendas.count) {
+                cell.configureWithAgenda(dailyAgendas[indexPath.item - 1] as! NSDictionary)
             }
 
             return cell
@@ -365,7 +368,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             formatter.dateStyle = .full
             let dateString = formatter.string(from: date!)
             
-            if agendas.count > 0 {
+            if dailyAgendas.count > 0 {
                 label.text = dateString
             } else {
                 label.text = "No Agenda Found for \(dateString)"
@@ -403,14 +406,14 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         
         // show todays agenda by default
         let yearMonth = "\(year)-\(monthIndex + 1)"
-        agendas.removeAllObjects()
+        dailyAgendas.removeAllObjects()
         selectedDay = ""
-        if let ymd = agenda[yearMonth] as? NSDictionary {
+        if let ymd = overAllAgenda[yearMonth] as? NSDictionary {
             let yearMonthDay = "\(year)-\(monthIndex + 1)-\(day)"
             selectedDay = yearMonthDay
             if let localAgendas = ymd[yearMonthDay] as? NSArray {
                 if localAgendas.count > 0 {
-                    agendas = localAgendas.mutableCopy() as! NSMutableArray
+                    dailyAgendas = localAgendas.mutableCopy() as! NSMutableArray
                 }
             }
         }
@@ -419,7 +422,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     }
     
     func fetchAllAgenda() -> Void {
-        agenda = agendaManager.fetchAgenda()
+        overAllAgenda = agendaManager.fetchOverAllAgenda()
     }
     
     func firstWeekDay(year: Int, monthIndex: Int) -> Int {

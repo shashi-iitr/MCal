@@ -10,7 +10,7 @@ import UIKit
 
 class AgendaManager: NSObject {
     
-    func fetchAgenda() -> NSDictionary {
+    func fetchOverAllAgenda() -> NSDictionary {
         var agenda = NSDictionary()
         do {
             if let file = Bundle.main.url(forResource: "agenda", withExtension: "json") {
