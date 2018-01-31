@@ -58,6 +58,7 @@ class Weather: NSObject {
 
 class WeatherManager: NSObject {
     
+    //https://api.darksky.net/forecast/fab8312c1a233e2713f005f4119bc66c/28.557674,77.2437853
     func fetchWeatherDataForLocation(_ location: CLLocation, success:@escaping (_ weather: Weather) -> Void, failure:@escaping (NSError?) -> Void) -> Void {
         let path = "https://api.darksky.net/forecast/fab8312c1a233e2713f005f4119bc66c/\(location.coordinate.latitude),\(location.coordinate.longitude)"
         

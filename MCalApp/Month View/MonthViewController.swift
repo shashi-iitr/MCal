@@ -78,6 +78,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         setupNavViews()
         setupCollectionView()
         setupTableView()
+        setCurrentDateIndex() // initially mark current date by default
         locManager.delegate = self
         locManager.fetchCurrentLocation()
     }
@@ -130,7 +131,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         self.view.addSubview(self.agendaTableView)
         
         self.agendaTableView.translatesAutoresizingMaskIntoConstraints = false
-        agendaTableView.topAnchor.constraint(equalTo: self.dayCollectionView.bottomAnchor, constant: 0).isActive = true
+        agendaTableView.topAnchor.constraint(equalTo: self.dayCollectionView.bottomAnchor, constant: 10).isActive = true
         agendaTableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         agendaTableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         agendaTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
@@ -229,18 +230,17 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         } else {
             let calcDate = indexPath.row - firstWeekDayMonth + 2
             let yearMonth = "\(year)-\(monthIndex + 1)"
+            agendas.removeAllObjects()
             if let ymd = agenda[yearMonth] as? NSDictionary {
                 let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
                 if let localAgendas = ymd[yearMonthDay] as? NSArray {
                     if localAgendas.count > 0 {
                         agendas = localAgendas.mutableCopy() as! NSMutableArray
-                        self.agendaTableView.reloadData()
                     }
-                } else {
-                    agendas.removeAllObjects()
-                    self.agendaTableView.reloadData()
                 }
             }
+            
+            self.agendaTableView.reloadData()
         }
     }
     
@@ -250,7 +250,6 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             let monthIndex = Int(ceil(Double(indexPath.section % 12)))
             let year = years.object(at: yearIndex) as! Int
             let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
-            print("firstWeekDayMonth \(firstWeekDayMonth) year \(year), monthIndex \(monthIndex)")
 
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:DayHeaderView.reusedIdentifier() , for: indexPath) as! DayHeaderView
             headerView.configureViewWithMonth(months[monthIndex], index: firstWeekDayMonth - 1)
@@ -299,6 +298,42 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: screenWidth, height: 30))
+        view.backgroundColor = Color.lightText.withAlpha(0.6)
+        
+        let label = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: screenWidth, height: 30))
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textAlignment = .center
+        
+        if agendas.count > 0, let indexPath = selectedIndexPath {
+            let yearIndex = Int(ceil(Double(indexPath.section / 12)))
+            let monthIndex = Int(ceil(Double(indexPath.section % 12)))
+            let year = years.object(at: yearIndex) as! Int
+            let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
+            let calcDate = indexPath.row - firstWeekDayMonth + 2
+            
+            let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
+            let date = yearMonthDay.date
+            
+            let formatter = DateFormatter()
+            formatter.dateStyle = .full
+            let dateString = formatter.string(from: date!)
+
+            label.text = dateString
+        } else {
+            label.text = "No Agenda Found"
+        }
+        
+        view.addSubview(label)
+        
+        return view
+    }
+    
     //MARK: Actions
     
     @objc func didTapBackButton(_ sender: UIBarButtonItem) -> Void {
@@ -306,6 +341,37 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     }
     
     //MARK: Helpers
+    
+    func setCurrentDateIndex() -> Void {
+        let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
+        let dayComp = calendar.components(.day, from: Date())
+        let monthComp = calendar.components(.month, from: Date())
+        let yearComp = calendar.components(.year, from: Date())
+
+        let day = dayComp.day!
+        let month = monthComp.month!
+        let year = yearComp.year!
+        let monthIndex = month - 1
+        let section = (self.years.index(of: year) * 12) + monthIndex
+        let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
+        let index = day + firstWeekDayMonth - 2
+        
+        selectedIndexPath = IndexPath.init(item: index, section: section) // current day index
+        
+        // show todays agenda by default
+        let yearMonth = "\(year)-\(monthIndex + 1)"
+        agendas.removeAllObjects()
+        if let ymd = agenda[yearMonth] as? NSDictionary {
+            let yearMonthDay = "\(year)-\(monthIndex + 1)-\(day)"
+            if let localAgendas = ymd[yearMonthDay] as? NSArray {
+                if localAgendas.count > 0 {
+                    agendas = localAgendas.mutableCopy() as! NSMutableArray
+                }
+            }
+        }
+        
+        self.agendaTableView.reloadData()
+    }
     
     func fetchAllAgenda() -> Void {
         agenda = agendaManager.fetchAgenda()
