@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		F1040436201BA5AB00481570 /* AgendaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1040435201BA5AB00481570 /* AgendaCell.swift */; };
 		F10EFFD5201B76E900D41080 /* WeekDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFD4201B76E900D41080 /* WeekDayView.swift */; };
-		F10EFFD7201B772400D41080 /* MonthBackButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFD6201B772400D41080 /* MonthBackButtonView.swift */; };
 		F10EFFD9201B77D000D41080 /* GenericExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFD8201B77D000D41080 /* GenericExtension.swift */; };
 		F10EFFDC201B7CB900D41080 /* YearCellHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFDB201B7CB900D41080 /* YearCellHeaderView.swift */; };
 		F10EFFDE201B7D0900D41080 /* MonthCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10EFFDD201B7D0900D41080 /* MonthCell.swift */; };
@@ -23,8 +22,6 @@
 		F13C7ED2201A524B002D03EC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F13C7ED0201A524B002D03EC /* LaunchScreen.storyboard */; };
 		F13C7EDD201A524B002D03EC /* MCalAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13C7EDC201A524B002D03EC /* MCalAppTests.swift */; };
 		F13C7EE8201A524B002D03EC /* MCalAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13C7EE7201A524B002D03EC /* MCalAppUITests.swift */; };
-		F141D5D5201F8DD00041BA2F /* PushAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F141D5D4201F8DD00041BA2F /* PushAnimator.swift */; };
-		F141D5D7201F8DE00041BA2F /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F141D5D6201F8DE00041BA2F /* PopAnimator.swift */; };
 		F145C91E2020DF4500E3CDC0 /* agenda.json in Resources */ = {isa = PBXBuildFile; fileRef = F145C91D2020DF4500E3CDC0 /* agenda.json */; };
 		F1BF44AE2020C90100A70E71 /* AgendaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BF44AD2020C90100A70E71 /* AgendaManager.swift */; };
 		F1E1E8B020223D5A0029502E /* TemperatureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E1E8AF20223D5A0029502E /* TemperatureCell.swift */; };
@@ -50,7 +47,6 @@
 /* Begin PBXFileReference section */
 		F1040435201BA5AB00481570 /* AgendaCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaCell.swift; sourceTree = "<group>"; };
 		F10EFFD4201B76E900D41080 /* WeekDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekDayView.swift; sourceTree = "<group>"; };
-		F10EFFD6201B772400D41080 /* MonthBackButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthBackButtonView.swift; sourceTree = "<group>"; };
 		F10EFFD8201B77D000D41080 /* GenericExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericExtension.swift; sourceTree = "<group>"; };
 		F10EFFDB201B7CB900D41080 /* YearCellHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearCellHeaderView.swift; sourceTree = "<group>"; };
 		F10EFFDD201B7D0900D41080 /* MonthCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCell.swift; sourceTree = "<group>"; };
@@ -70,8 +66,6 @@
 		F13C7EE3201A524B002D03EC /* MCalAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MCalAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F13C7EE7201A524B002D03EC /* MCalAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCalAppUITests.swift; sourceTree = "<group>"; };
 		F13C7EE9201A524B002D03EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F141D5D4201F8DD00041BA2F /* PushAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushAnimator.swift; sourceTree = "<group>"; };
-		F141D5D6201F8DE00041BA2F /* PopAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 		F145C91D2020DF4500E3CDC0 /* agenda.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = agenda.json; sourceTree = "<group>"; };
 		F1BF44AD2020C90100A70E71 /* AgendaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaManager.swift; sourceTree = "<group>"; };
 		F1E1E8AF20223D5A0029502E /* TemperatureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureCell.swift; sourceTree = "<group>"; };
@@ -117,7 +111,6 @@
 			children = (
 				F129606B201B16CD00CB99AB /* MonthViewController.swift */,
 				F10EFFD4201B76E900D41080 /* WeekDayView.swift */,
-				F10EFFD6201B772400D41080 /* MonthBackButtonView.swift */,
 				F10EFFDF201B7E9B00D41080 /* DayCell.swift */,
 				F131CCE4201CF3FE004CE2C0 /* DayHeaderView.swift */,
 				F1E1E8AF20223D5A0029502E /* TemperatureCell.swift */,
@@ -166,8 +159,6 @@
 				F13C7ED0201A524B002D03EC /* LaunchScreen.storyboard */,
 				F13C7ED3201A524B002D03EC /* Info.plist */,
 				F10EFFD8201B77D000D41080 /* GenericExtension.swift */,
-				F141D5D4201F8DD00041BA2F /* PushAnimator.swift */,
-				F141D5D6201F8DE00041BA2F /* PopAnimator.swift */,
 				F12AC0F82021865E0064EC37 /* WeatherManager.swift */,
 			);
 			path = MCalApp;
@@ -329,14 +320,11 @@
 				F10EFFE0201B7E9B00D41080 /* DayCell.swift in Sources */,
 				F13C7ECA201A524B002D03EC /* ViewController.swift in Sources */,
 				F10EFFDC201B7CB900D41080 /* YearCellHeaderView.swift in Sources */,
-				F141D5D5201F8DD00041BA2F /* PushAnimator.swift in Sources */,
 				F1BF44AE2020C90100A70E71 /* AgendaManager.swift in Sources */,
 				F10EFFD9201B77D000D41080 /* GenericExtension.swift in Sources */,
-				F10EFFD7201B772400D41080 /* MonthBackButtonView.swift in Sources */,
 				F10EFFD5201B76E900D41080 /* WeekDayView.swift in Sources */,
 				F1040436201BA5AB00481570 /* AgendaCell.swift in Sources */,
 				F13C7EC8201A524B002D03EC /* AppDelegate.swift in Sources */,
-				F141D5D7201F8DE00041BA2F /* PopAnimator.swift in Sources */,
 				F12AC0F92021865F0064EC37 /* WeatherManager.swift in Sources */,
 				F131CCE5201CF3FE004CE2C0 /* DayHeaderView.swift in Sources */,
 				F1E1E8B020223D5A0029502E /* TemperatureCell.swift in Sources */,

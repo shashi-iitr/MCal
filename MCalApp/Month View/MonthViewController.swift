@@ -15,7 +15,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     var allDays = NSMutableArray()
     var currentlySelectedYear: Int = 2018
-    var currentlySelectedMonthIndex: Int = 0 // starts from 0
+    var currentlySelectedMonthIndex: Int = 0 // will always starts from 0
     
     var agendaTableView: UITableView!
     var yearBarButtonItem: UIBarButtonItem!
@@ -82,7 +82,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         setupNavViews()
         setupCollectionView()
         setupTableView()
-        setCurrentDateIndex() // initially mark current date by default
+        setCurrentDateIndex()
         locManager.delegate = self
         locManager.fetchCurrentLocation()
     }
@@ -115,7 +115,7 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         weekDayView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         weekDayView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
-        DispatchQueue.main.asyncAfter(deadline: .now() ) {
+        DispatchQueue.main.asyncAfter(deadline: .now()  + 0.2) {
             self.dayCollectionView.reloadData()
             self.dayCollectionView.scrollToItem(at: IndexPath.init(item: 0, section: ((self.years.index(of: self.currentlySelectedYear) * 12) + self.currentlySelectedMonthIndex)), at: .top, animated: false)
 
@@ -268,6 +268,10 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         return UICollectionReusableView()
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize.init(width: screenWidth, height: DayHeaderView.viewHeight())
+    }
+    
     //MARK: UICollectionViewDelegateFlowLayout
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -388,23 +392,35 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     
     //MARK: Helpers
     
+    //Check if selected month and year is same as current date
+    //set current day as default selected
+    //else set 1st of selected month as default selected day
     func setCurrentDateIndex() -> Void {
         let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
         let dayComp = calendar.components(.day, from: Date())
         let monthComp = calendar.components(.month, from: Date())
         let yearComp = calendar.components(.year, from: Date())
 
-        let day = dayComp.day!
+        var day = dayComp.day!
         let month = monthComp.month!
-        let year = yearComp.year!
-        let monthIndex = month - 1
+        var year = yearComp.year!
+        var monthIndex = month - 1
+        
+        if currentlySelectedYear == year && currentlySelectedMonthIndex == monthIndex {
+            // show todays agenda by default
+        } else {
+            // show agenda of 1st day of month by default
+            day = 1
+            monthIndex = currentlySelectedMonthIndex
+            year = currentlySelectedYear
+        }
+        
         let section = (self.years.index(of: year) * 12) + monthIndex
         let firstWeekDayMonth = firstWeekDay(year: year, monthIndex: monthIndex)
         let index = day + firstWeekDayMonth - 2
         
-        selectedIndexPath = IndexPath.init(item: index, section: section) // current day index
+        selectedIndexPath = IndexPath.init(item: index, section: section)
         
-        // show todays agenda by default
         let yearMonth = "\(year)-\(monthIndex + 1)"
         dailyAgendas.removeAllObjects()
         selectedDay = ""

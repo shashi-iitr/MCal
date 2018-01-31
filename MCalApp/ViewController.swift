@@ -50,13 +50,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         self.view.backgroundColor = .white
         self.title = "Calendar"
         
-        let month = Calendar.current.component(.month, from: Date())
-        print("month \(month)")
-        
-        print("currentYear \(currentYear)")
-        currentYearIndex = currentIndex(startYear: 2005, endYear: 2050)
-        print("currentYearIndex \(currentYearIndex)")
-
+        currentYearIndex = currentIndex(startYear: 2005, endYear: 2050) // calendar is showing years from 2005 to 2050 only
         setupViews()
     }
     
@@ -105,7 +99,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             monthVC.years = years
             monthVC.currentlySelectedYear = selectedYear
             monthVC.currentlySelectedMonthIndex = selectedMonthIndex
-            monthVC.view.backgroundColor = .white
 
             return monthVC
         }
