@@ -13,7 +13,6 @@ let screenHeight = UIScreen.main.bounds.height
 let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIViewControllerPreviewingDelegate {
-    var referenceFrame = CGRect.zero
     var currentYear: Int = Calendar.current.component(.year, from: Date())
     var currentYearIndex = 0
     var years = NSMutableArray()
@@ -136,11 +135,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-        let cell = collectionView.cellForItem(at: indexPath)
-        referenceFrame = (cell?.contentView.convert((cell?.contentView.frame)!, to: self.view))!
-        print("referenceFrame \(String(describing: referenceFrame))")
-        
+        collectionView.deselectItem(at: indexPath, animated: true)        
         selectedYear = years[indexPath.section] as! Int
         selectedMonthIndex = indexPath.item
         

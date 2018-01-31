@@ -15,11 +15,10 @@ class PushAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let fromViewContr = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from) as! ViewController
         let toViewContr = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)
         transitionContext.containerView.addSubview((toViewContr?.view)!)
         toViewContr?.view.alpha = 1
-        toViewContr?.view.frame = fromViewContr.referenceFrame
+        toViewContr?.view.frame = .zero
         UIView.animate(withDuration: self.transitionDuration(using: transitionContext), animations: {
             toViewContr?.view.alpha = 1
             toViewContr?.view.frame = UIScreen.main.bounds

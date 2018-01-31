@@ -27,6 +27,7 @@
 		F141D5D7201F8DE00041BA2F /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F141D5D6201F8DE00041BA2F /* PopAnimator.swift */; };
 		F145C91E2020DF4500E3CDC0 /* agenda.json in Resources */ = {isa = PBXBuildFile; fileRef = F145C91D2020DF4500E3CDC0 /* agenda.json */; };
 		F1BF44AE2020C90100A70E71 /* AgendaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BF44AD2020C90100A70E71 /* AgendaManager.swift */; };
+		F1E1E8B020223D5A0029502E /* TemperatureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E1E8AF20223D5A0029502E /* TemperatureCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		F141D5D6201F8DE00041BA2F /* PopAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 		F145C91D2020DF4500E3CDC0 /* agenda.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = agenda.json; sourceTree = "<group>"; };
 		F1BF44AD2020C90100A70E71 /* AgendaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaManager.swift; sourceTree = "<group>"; };
+		F1E1E8AF20223D5A0029502E /* TemperatureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				F10EFFD6201B772400D41080 /* MonthBackButtonView.swift */,
 				F10EFFDF201B7E9B00D41080 /* DayCell.swift */,
 				F131CCE4201CF3FE004CE2C0 /* DayHeaderView.swift */,
+				F1E1E8AF20223D5A0029502E /* TemperatureCell.swift */,
 			);
 			path = "Month View";
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				F141D5D7201F8DE00041BA2F /* PopAnimator.swift in Sources */,
 				F12AC0F92021865F0064EC37 /* WeatherManager.swift in Sources */,
 				F131CCE5201CF3FE004CE2C0 /* DayHeaderView.swift in Sources */,
+				F1E1E8B020223D5A0029502E /* TemperatureCell.swift in Sources */,
 				F129606C201B16CD00CB99AB /* MonthViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
