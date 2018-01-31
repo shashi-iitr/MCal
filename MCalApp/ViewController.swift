@@ -12,7 +12,7 @@ let screenWidth = UIScreen.main.bounds.width
 let screenHeight = UIScreen.main.bounds.height
 let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIViewControllerPreviewingDelegate {
     var referenceFrame = CGRect.zero
     var currentYear: Int = Calendar.current.component(.year, from: Date())
     var currentYearIndex = 0
@@ -83,6 +83,8 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         monthCollectionView.register(MonthCell.self, forCellWithReuseIdentifier: MonthCell.reusedIdentifier())
         monthCollectionView.register(YearCellHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: YearCellHeaderView.reusedIdentifier())
         
+        self.registerForPreviewing(with: self, sourceView: monthCollectionView)
+
         self.view.addSubview(monthCollectionView)
         monthCollectionView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 64).isActive = true
         monthCollectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
@@ -97,6 +99,30 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 self.monthCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.monthCollectionView.contentInset.top), animated: false)
             }
         }
+    }
+    
+    //MARK: UIViewControllerPreviewingDelegate
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        if let indexPath = monthCollectionView.indexPathForItem(at: location) {
+            let selectedYear = years[indexPath.section] as! Int
+            let selectedMonthIndex = indexPath.item
+            
+            let monthVC = MonthViewController.init(nibName: nil, bundle: nil)
+            monthVC.years = years
+            monthVC.currentlySelectedYear = selectedYear
+            monthVC.currentlySelectedMonthIndex = selectedMonthIndex
+            monthVC.agenda = agenda
+            monthVC.view.backgroundColor = .white
+
+            return monthVC
+        }
+        
+        return nil
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        self.show(viewControllerToCommit, sender: self)
     }
         
     //MARK: UICollectionViewDelegate, UICollectionViewDataSource
