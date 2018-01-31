@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CoreLocation
 
-class MonthViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource {
+class MonthViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, LocationManagerDelegate {
     
     var years = NSMutableArray()
     var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -21,7 +22,13 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     var agenda = NSDictionary()
     var agendas = NSMutableArray()
     var selectedIndexPath: IndexPath?
-    
+    let locManager = LocationManager()
+    let wManager = WeatherManager()
+
+    lazy var agendaManager: AgendaManager = {
+        return AgendaManager()
+    }()
+
     let dayCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -54,6 +61,8 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
+        fetchAllAgenda()
+
         //check for leap year
         for i in 0..<years.count {
             let year = years[i] as! Int
@@ -69,6 +78,8 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         setupNavViews()
         setupCollectionView()
         setupTableView()
+        locManager.delegate = self
+        locManager.fetchCurrentLocation()
     }
     
     //MARK: Configure subviews
@@ -106,7 +117,6 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             if let attributes = self.dayCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(item: 0, section: ((self.years.index(of: self.currentlySelectedYear) * 12) + self.currentlySelectedMonthIndex))) {
                 self.dayCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.dayCollectionView.contentInset.top), animated: false)
             }
-
         }
     }
     
@@ -124,6 +134,20 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
         agendaTableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         agendaTableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         agendaTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+    }
+    
+    //MARK: LocationManagerDelegate
+    
+    func userLocationUpdated(_ location: CLLocation?, isLocated: Bool) {
+        guard let loc = location else {
+            return
+        }
+        
+        wManager.fetchWeatherDataForLocation(loc, success: { (weather) in
+            
+        }) { (error) in
+            
+        }
     }
     
     //MARK: UICollectionViewDelegate, UICollectionViewDataSource
@@ -158,7 +182,6 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             var isAgendaFound = false
             let yearMonth = "\(year)-\(monthIndex + 1)"
             if let ymd = agenda[yearMonth] as? NSDictionary {
-                print("ymd \(ymd)")
                 let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
                 if let agendas = ymd[yearMonthDay] as? NSArray {
                     if agendas.count > 0 {
@@ -207,7 +230,6 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
             let calcDate = indexPath.row - firstWeekDayMonth + 2
             let yearMonth = "\(year)-\(monthIndex + 1)"
             if let ymd = agenda[yearMonth] as? NSDictionary {
-                print("ymd \(ymd)")
                 let yearMonthDay = "\(year)-\(monthIndex + 1)-\(calcDate)"
                 if let localAgendas = ymd[yearMonthDay] as? NSArray {
                     if localAgendas.count > 0 {
@@ -284,6 +306,10 @@ class MonthViewController: UIViewController, UICollectionViewDelegate, UICollect
     }
     
     //MARK: Helpers
+    
+    func fetchAllAgenda() -> Void {
+        agenda = agendaManager.fetchAgenda()
+    }
     
     func firstWeekDay(year: Int, monthIndex: Int) -> Int {
         return ("\(year)-\(monthIndex + 1)-01".date?.firstDayOfTheMonth.weekday)!

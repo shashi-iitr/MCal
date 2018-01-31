@@ -17,15 +17,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     var currentYear: Int = Calendar.current.component(.year, from: Date())
     var currentYearIndex = 0
     var years = NSMutableArray()
-    var agenda = NSDictionary()
 
     var selectedYear: Int = 2018
     var selectedMonthIndex: Int = 0
     
-    lazy var agendaManager: AgendaManager = {
-        return AgendaManager()
-    }()
-
     let monthCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -64,7 +59,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         print("currentYearIndex \(currentYearIndex)")
 
         setupViews()
-        fetchAllAgenda()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -112,7 +106,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             monthVC.years = years
             monthVC.currentlySelectedYear = selectedYear
             monthVC.currentlySelectedMonthIndex = selectedMonthIndex
-            monthVC.agenda = agenda
             monthVC.view.backgroundColor = .white
 
             return monthVC
@@ -155,7 +148,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         monthVC.years = years
         monthVC.currentlySelectedYear = selectedYear
         monthVC.currentlySelectedMonthIndex = selectedMonthIndex
-        monthVC.agenda = agenda
         self.navigationController?.pushViewController(monthVC, animated: true)
     }
     
@@ -185,11 +177,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     //MARK: Helpers
-    
-    func fetchAllAgenda() -> Void {
-        agenda = agendaManager.fetchAgenda()
-    }
-    
+        
     func currentIndex(startYear: Int, endYear: Int) -> Int {
         var index = 0
         for i in startYear...endYear {
